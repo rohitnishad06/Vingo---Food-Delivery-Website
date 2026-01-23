@@ -10,7 +10,7 @@ const userSlice = createSlice({
     shopInMyCity: null,
     itemsInMyCity: null,
     cardItems:[],
-    totalAmount:0
+    C:0
   },
   reducers: {
     setUserData: (state, action) => {

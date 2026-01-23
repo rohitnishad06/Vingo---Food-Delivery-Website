@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const mapSlice = createSlice({
-  name: "user",
+  name: "map",
   initialState: {
     location:{
       lat:null,
@@ -15,12 +15,12 @@ const mapSlice = createSlice({
       state.location.lat = lat
       state.location.lon = lon
     },
-    setAddress:(state, action)=>{
+    setDeliveryAddress:(state, action)=>{
       state.address = action.payload
     }
   }
 });
 
-export const {  } = mapSlice.actions;
+export const { setLocation, setDeliveryAddress } = mapSlice.actions;
 
 export default mapSlice.reducer;
