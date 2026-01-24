@@ -12,6 +12,7 @@ import axios from "axios";
 import { MdDeliveryDining } from "react-icons/md";
 import { FaMobile } from "react-icons/fa";
 import { FaRegCreditCard } from "react-icons/fa";
+import { serverUrl } from "../App";
 
 const CheckOut = () => {
   const dispatch = useDispatch();
@@ -27,6 +28,25 @@ const CheckOut = () => {
   const deliveryFee = totalAmount>500?0:40;
   const amountWithDeliveryFee = totalAmount + deliveryFee
 
+  // handle place Order
+  const handlePlaceOrder = async() =>{
+    try {
+      const result = await axios.post(`${serverUrl}/api/order/place-order`,{
+        paymentMethod, 
+        deliveryAddress:{
+          text:addressInput,
+          latitude:location.lat,
+          longitude:location.lon
+        },
+        totalAmount,
+        cardItems
+    },{withCredentials:true})
+    console.log(result.data);
+    navigate('/order-placed')
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   // Recenter the map
   function ReCenterMap({ location }) {
@@ -213,7 +233,7 @@ const CheckOut = () => {
           </div>
         </section>
         {/* place order Btn */}
-        <button className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold">
+        <button className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold" onClick={handlePlaceOrder}>
           {paymentMethod=="cod"?"Place Order":"Pay & Place order"}</button>
       </div>
     </div>
