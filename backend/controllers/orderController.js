@@ -66,6 +66,9 @@ export const placeOrder = async (req, res) => {
       totalAmount,
       shopOrders,
     });
+
+    await newOrder.populate("shopOrders.shopOrderItems.item", "name image price")
+    await newOrder.populate("shopOrders.shop", "name")
     
     return res.status(201).json(newOrder);
     
@@ -82,6 +85,7 @@ export const placeOrder = async (req, res) => {
 export const getMyOrders = async(req, res) =>{
   try {
     const user = await userModel.findById(req.userId);
+    // for user 
     if(user.role == "user"){
       const orders = await orderModel.find({user:req.userId})
     .sort({createdAt:-1})
@@ -90,14 +94,25 @@ export const getMyOrders = async(req, res) =>{
     .populate("shopOrders.shopOrderItems.item","name image price")
 
     return res.status(201).json(orders);
+    // for owner
     }else if(user.role=="owner"){
        const orders = await orderModel.find({"shopOrders.owner":req.userId})
-    .sort({createdAt:-1})
-    .populate("shopOrders.shop","name")
-    .populate("user")
-    .populate("shopOrders.shopOrderItems.item","name image price")
+      .sort({createdAt:-1})
+      .populate("shopOrders.shop","name")
+      .populate("user")
+      .populate("shopOrders.shopOrderItems.item","name image price")
 
-    return res.status(201).json(orders);
+      // filter order for shop owner
+      const filteredOrders = orders.map((order=>({
+        _id:order._id,
+        paymentMethod:order.paymentMethod,
+        user:order.user,
+        shopOrders: order.shopOrders.find(o=>o.owner._id==req.userId),
+        createdAt:user.createdAt,
+        deliveryAddress: order.deliveryAddress
+      })))
+
+    return res.status(201).json(filteredOrders);
     }
     
   } catch (error) {

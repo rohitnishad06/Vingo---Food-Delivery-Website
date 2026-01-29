@@ -13,6 +13,7 @@ import { MdDeliveryDining } from "react-icons/md";
 import { FaMobile } from "react-icons/fa";
 import { FaRegCreditCard } from "react-icons/fa";
 import { serverUrl } from "../App";
+import { addMyOrders } from "../redux/userSlice";
 
 const CheckOut = () => {
   const dispatch = useDispatch();
@@ -41,7 +42,7 @@ const CheckOut = () => {
         totalAmount,
         cardItems
     },{withCredentials:true})
-    console.log(result.data);
+    dispatch(addMyOrders(result.data))
     navigate('/order-placed')
     } catch (error) {
       console.log(error)
