@@ -1,7 +1,25 @@
+import axios from "axios";
 import React from "react";
 import { FaPhone } from "react-icons/fa6";
+import { serverUrl } from "../App";
+import { useDispatch } from "react-redux";
+import { updateOrderStatus } from "../redux/userSlice";
 
 const OwnerOrderCart = ({ data }) => {
+
+  const dispatch = useDispatch()
+
+  // handle order status
+  const handleUpdateStatus = async(orderId, shopId, status) =>{
+    try {
+      const result = await axios.post(`${serverUrl}/api/order/update-status/${orderId}/${shopId}`, {status}, {withCredentials:true})
+      console.log(result.data.status)
+      dispatch(updateOrderStatus({orderId, shopId, status }))
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className="bg-white rounded-lg shadow p-4 space-y-4">
       {/* Customer details */}
@@ -50,7 +68,7 @@ const OwnerOrderCart = ({ data }) => {
       <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
         <span className="text-sm">Status: <span className="font-semibold capitalize text-[#ff4d2d]">{data.shopOrders.status}</span></span>
 
-        <select value={data.shopOrders.status} className="rounded-md border px-3 py-1 text-sm focus:oultine-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d]"> 
+        <select value={data.shopOrders.status} className="rounded-md border px-3 py-1 text-sm focus:oultine-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d]" onChange={(e)=>handleUpdateStatus(data._id, data.shopOrders.shop._id, e.target.value)}> 
           <option value="pending">Pending</option>
           <option value="preparing">Preparing</option>
           <option value="out of delivery">Out of Delivery</option>

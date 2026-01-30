@@ -79,8 +79,6 @@ export const placeOrder = async (req, res) => {
 };
 
 
-
-
 // get users order
 export const getMyOrders = async(req, res) =>{
   try {
@@ -120,3 +118,27 @@ export const getMyOrders = async(req, res) =>{
   }
 }
 
+
+// update order status
+export const updateOrderStatus = async(req, res) =>{
+  try {
+    const {orderId, shopId} = req.params;
+    const {status} = req.body;
+
+    const order = await orderModel.findById(orderId);
+    
+    const shopOrder = order.shopOrders.find(o=>o.shop==shopId);
+    if(!shopOrder){
+      return res.status(400).json({message:"Shop not found"});
+    }
+
+    shopOrder.status = status;
+
+    await order.save();
+
+    return res.status(200).json(shopOrder);
+
+  } catch (error) {
+    return res.status(500).json({ message:`Order Update Status Error ${error}` });
+  }
+}
