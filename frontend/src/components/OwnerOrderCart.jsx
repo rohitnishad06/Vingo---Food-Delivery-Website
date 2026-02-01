@@ -4,17 +4,20 @@ import { FaPhone } from "react-icons/fa6";
 import { serverUrl } from "../App";
 import { useDispatch } from "react-redux";
 import { updateOrderStatus } from "../redux/userSlice";
+import { useState } from "react";
 
 const OwnerOrderCart = ({ data }) => {
 
   const dispatch = useDispatch()
+  const [availableBoys, setAvailableBoys] = useState([]);
 
   // handle order status
   const handleUpdateStatus = async(orderId, shopId, status) =>{
     try {
       const result = await axios.post(`${serverUrl}/api/order/update-status/${orderId}/${shopId}`, {status}, {withCredentials:true})
-      console.log(result.data.status)
       dispatch(updateOrderStatus({orderId, shopId, status }))
+      setAvailableBoys(result.data.availableBoys)
+      console.log(result.data)
     } catch (error) {
       console.log(error);
     }
@@ -75,6 +78,17 @@ const OwnerOrderCart = ({ data }) => {
         </select>
 
       </div>
+
+        {data.shopOrders.status=="out of delivery" && 
+          <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50 gap-4">
+            <p>Available Delivery Boys :</p>
+            {availableBoys?.length>0 ?(
+              availableBoys.map((b, index) => (
+                <div className="text-gray-800"> {b.fullName} - {b.mobile}</div>
+              ))
+            ):<div> Waiting for Delivery Boy to Accept</div>}
+          </div> 
+        }
 
       {/* total  */}
       <div className="text-right font-bold text-gray-800 text-sm">

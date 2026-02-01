@@ -33,9 +33,19 @@ const userSchema = new mongoose.Schema(
     otpExpires:{
       type:Date
     },
+
+    // geoJson for location
+    location:{
+      type:{type:String, enum:['Point'], default:'Point'},
+      coordinates:{type:[Number],default:[0,0]}
+    }
+
   },
   { timestamps: true }
 );
+
+// tell DB to treat location as a location type 
+userSchema.index({location:"2dsphere"});  
 
 const userModel = mongoose.model("User",userSchema);
 
