@@ -78,7 +78,8 @@ const OwnerOrderCart = ({ data }) => {
         </select>
 
       </div>
-
+        
+        {/* Show delivery Boys */}
         {data.shopOrders.status=="out of delivery" && 
           <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50 gap-4">
             <p>Available Delivery Boys :</p>
