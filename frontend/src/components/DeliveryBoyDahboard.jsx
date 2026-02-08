@@ -3,12 +3,19 @@ import Navbar from './Navbar'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
 import { serverUrl } from '../App'
+import DeliveryBoyTracking from './DeliveryBoyTracking'
 
 const DeliveryBoyDahboard = () => {
 
   const {userData} = useSelector(state=>state.user)
   const [availableAssignments, setAvailableAssignments] = useState([])
   const [currentOrder, setCurrentOrder] = useState();
+  const [showOtpBox, setShowOtpBox] = useState(false);
+
+  // send otp to user
+  const handleSendOtp = () => {
+    setShowOtpBox(true);
+  }
 
   // get orders
   const getCurrentOrder = async() => {
@@ -92,6 +99,19 @@ const DeliveryBoyDahboard = () => {
               <p className='text-sm text-gray-500'>{currentOrder.deliveryAddress?.text}</p>
               <p className='text-xs text-gray-400'>{currentOrder.shopOrder.shopOrderItems.length} items | {currentOrder.shopOrder.subTotal}</p>
             </div>
+            <DeliveryBoyTracking data={currentOrder} />
+
+            {!showOtpBox ? 
+              <button className='mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200' onClick={handleSendOtp}>
+              Marked As Delivered
+              </button> : 
+              <div className='mt-2 p-4 border border-xl rounded-xl bg-gray-50'> 
+                <p className='text-sm font-semibold mb-2'>Enter OTP Send To <span className='text-orange-500'>{currentOrder.user.fullName}</span> </p>
+                <input type="text" className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' placeholder='Enter OTP'/>
+                <button className='mt-4 w-full bg-orange-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-orange-600 active:scale-95 transition-all duration-200'>Submit OTP</button>
+              </div>
+            }
+            
           </div>
         }
         
