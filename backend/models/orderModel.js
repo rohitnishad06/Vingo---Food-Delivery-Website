@@ -6,15 +6,14 @@ const shopOrderItemsSchema = new mongoose.Schema(
     item: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Items",
-      required:true
+      required: true,
     },
-    name:String,
+    name: String,
     price: Number,
     quantity: Number,
   },
   { timestamps: true },
 );
-
 
 // shop order schema
 const shopOrderSchema = new mongoose.Schema(
@@ -29,24 +28,35 @@ const shopOrderSchema = new mongoose.Schema(
     },
     subTotal: Number,
     shopOrderItems: [shopOrderItemsSchema],
-    status:{
-      type:String,
-      enum:["pending", "preparing", "out of delivery","delivered"],
-      default:"pending"
+    status: {
+      type: String,
+      enum: ["pending", "preparing", "out of delivery", "delivered"],
+      default: "pending",
     },
-    assignment:{
+    assignment: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "DeliveryAssignment",
-      default: null
+      default: null,
     },
-    assignedDeliveryBoy:{
+    assignedDeliveryBoy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    deliveryOtp: {
+      type: String,
+      default:null
+    },
+    otpExpires: {
+      type: Date,
+      default:null
+    },
+    deliveredAt:{
+      type:Date,
+      default:null
     }
   },
   { timestamps: true },
 );
-
 
 // order schema
 const orderSchema = new mongoose.Schema(
@@ -74,6 +84,6 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const orderModel = mongoose.model("Order",orderSchema);
+const orderModel = mongoose.model("Order", orderSchema);
 
 export default orderModel;
