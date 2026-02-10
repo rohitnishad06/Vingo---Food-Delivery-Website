@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { CiSearch } from "react-icons/ci";
 import { FiShoppingCart } from "react-icons/fi";
@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import { serverUrl } from "../App";
-import { setUserData } from "../redux/userSlice";
+import { setSearchitems, setUserData } from "../redux/userSlice";
 import { TbReceiptRupee } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +16,7 @@ const Navbar = () => {
   const { myShopData } = useSelector((state) => state.owner);
   const [showInfo, setShowInfo] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [query, setQuery] = useState("")
   const dispatch = useDispatch();
   const navigate = useNavigate()
 
@@ -29,6 +30,25 @@ const Navbar = () => {
       console.log(error);
     }
   };
+
+    // search handler
+    const handleSearchitems = async() => {
+      try {
+        const result = await axios.get(`${serverUrl}/api/item/search-items?query=${query}&city=${city}`,{withCredentials:true})
+        dispatch(setSearchitems(result.data));
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    useEffect(() => {
+      if(query){
+        handleSearchitems();
+      }else{
+        dispatch(setSearchitems(null));
+      }
+
+    },[query])
 
   return (
     <div className="w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 left-0 z-[9999] bg-[#fff9f6] shadow-sm">
@@ -50,6 +70,8 @@ const Navbar = () => {
               type="text"
               placeholder="Search delicious food..."
               className="w-full text-gray-700 outline-none bg-transparent placeholder-gray-400"
+              onChange={(e) => setQuery(e.target.value)}
+              value={query}
             />
           </div>
         </div>
@@ -78,6 +100,8 @@ const Navbar = () => {
               type="text"
               placeholder="Search delicious food..."
               className="w-full text-gray-700 outline-none bg-transparent placeholder-gray-400"
+              onChange={(e) => setQuery(e.target.value)}
+              value={query}
             />
           </div>
         </div>

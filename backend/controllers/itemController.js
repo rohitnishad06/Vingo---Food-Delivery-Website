@@ -1,4 +1,3 @@
-
 import itemModel from "../models/itemmodel.js";
 import shopModel from "../models/shopModel.js";
 import uploadCloudinary from "../utils/cloudinary.js";
@@ -33,7 +32,7 @@ export const addItem = async (req, res) => {
 
     shop.items.push(item._id);
     await shop.save();
-    await shop.populate("owner")
+    await shop.populate("owner");
     await shop.populate({
       path: "items",
       options: { sort: { updatedAt: -1 } },
@@ -60,7 +59,7 @@ export const editItem = async (req, res) => {
     const item = await itemModel.findByIdAndUpdate(
       itemId,
       { name, category, foodType, price, image },
-      { new: true }
+      { new: true },
     );
 
     if (!item) {
@@ -123,38 +122,79 @@ export const getItemByCity = async (req, res) => {
     const { city } = req.params;
 
     const shops = await shopModel.find({
-      city: { $regex: new RegExp(`^${city}$`, "i") }
+      city: { $regex: new RegExp(`^${city}$`, "i") },
     });
 
-    if (!shops)
-      return res.status(404).json({ msg: "No shops found" });
+    if (!shops) return res.status(404).json({ msg: "No shops found" });
 
     // 🔥 Extract OWNER IDs instead of SHOP IDs
-    const ownerIds = shops.map(shop => shop.owner);
+    const ownerIds = shops.map((shop) => shop.owner);
 
     const items = await itemModel.find({
-      owner: { $in: ownerIds }
+      owner: { $in: ownerIds },
     });
 
     return res.status(200).json(items);
-
   } catch (error) {
     return res.status(500).json({ msg: error.message });
   }
 };
 
 // get items by shop
-export const getItemsByShop = async(req, res) => {
+export const getItemsByShop = async (req, res) => {
   try {
-    const {shopId} = req.params
-    const shop = await shopModel.findById(shopId).populate('items')
-    if(!shop){
-      return res.status(400).json({message:"Shop not found"});
+    const { shopId } = req.params;
+    const shop = await shopModel.findById(shopId).populate("items");
+    if (!shop) {
+      return res.status(400).json({ message: "Shop not found" });
     }
     return res.status(200).json({
-      shop, items: shop.items
-    })
+      shop,
+      items: shop.items,
+    });
   } catch (error) {
     return res.status(500).json({ msg: `get item by shop error ${error}` });
   }
-}
+};
+
+// search items
+export const searchItems = async (req, res) => {
+  try {
+    const { query, city } = req.query;
+
+    if (!query || !city) {
+      return res.status(400).json({ msg: "Query and city are required" });
+    }
+
+    // 1️⃣ Find shops in city
+    const shops = await shopModel.find({
+      city: { $regex: city.trim(), $options: "i" },
+    });
+
+    if (shops.length === 0) {
+      return res.status(404).json({ msg: "No shops found in this city" });
+    }
+
+    // 2️⃣ Extract owner IDs
+    const ownerIds = shops.map(s => s.owner);
+
+    // 3️⃣ Find items by owner + search text
+    const items = await itemModel.find({
+      owner: { $in: ownerIds },
+      $or: [
+        { name: { $regex: query.trim(), $options: "i" } },
+        { category: { $regex: query.trim(), $options: "i" } }
+      ]
+    })
+    .populate("owner", "shopName image"); // optional
+
+    return res.status(200).json(items);
+
+  } catch (error) {
+    return res.status(500).json({
+      msg: "Search Items error",
+      error: error.message,
+    });
+  }
+};
+

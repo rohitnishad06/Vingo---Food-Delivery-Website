@@ -61,7 +61,6 @@ export const getShopByCity = async(req, res) =>{
   try {
     const {city} = req.params
 
-
     const shops = await shopModel.find({
       city:{$regex:new RegExp(`^${city}$`,"i")}
     }).populate('items')
