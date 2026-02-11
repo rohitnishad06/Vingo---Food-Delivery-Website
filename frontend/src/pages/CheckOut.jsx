@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { FaLocationDot } from "react-icons/fa6";
-import { MdMyLocation } from "react-icons/md";
+import { MdDescription, MdMyLocation } from "react-icons/md";
 import { IoIosSearch } from "react-icons/io";
 import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,12 +42,49 @@ const CheckOut = () => {
         totalAmount,
         cardItems
     },{withCredentials:true})
-    dispatch(addMyOrders(result.data))
-    navigate('/order-placed')
+    if(paymentMethod == "cod"){
+      dispatch(addMyOrders(result.data))
+      navigate('/order-placed')
+    }else{
+      const orderId = result.data.orderId;
+      const razorOrder = result.data.razorOrder
+      handleRazorpayWindow(orderId, razorOrder);
+    }
+    
     } catch (error) {
       console.log(error)
     }
   }
+
+  // handle razorpay window 
+  const handleRazorpayWindow =(orderId, razorOrder) => {
+
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: razorOrder.amount,
+      currency: 'INR',
+      name:"Vingo",
+      Description:"Food Delivery Website",
+      order_id: razorOrder.id,
+      handler: async function name(response) {
+        try {
+          const result = await axios.post(`${serverUrl}/api/order/verify-payment`,{
+            razorpay_payment_id : response.razorpay_payment_id,
+            orderId
+          },{withCredentials:true})
+          dispatch(addMyOrders(result.data))
+          navigate('/order-placed')
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    }
+   
+    const rzp = new window.Razorpay(options)
+    rzp.open()
+
+  }
+
 
   // Recenter the map
   function ReCenterMap({ location }) {

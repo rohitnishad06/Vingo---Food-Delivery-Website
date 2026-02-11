@@ -1,10 +1,11 @@
 import express from "express";
 import isAuth from "../middlewares/isAuth.js";
-import {  acceptOrder, getCurrentOrder, getdeliveryBoyAssignment, getMyOrders, getOrderById, placeOrder, sendDeliveryOtp, updateOrderStatus, verifyDeliveryOtp } from "../controllers/orderController.js";
+import {  acceptOrder, getCurrentOrder, getdeliveryBoyAssignment, getMyOrders, getOrderById, placeOrder, sendDeliveryOtp, updateOrderStatus, verifyDeliveryOtp, verifyPayment } from "../controllers/orderController.js";
 
 const orderRouter = express.Router();
 
 orderRouter.post("/place-order", isAuth ,placeOrder);
+orderRouter.post("/verify-payment", isAuth ,verifyPayment);
 orderRouter.post("/send-delivery-otp", isAuth ,sendDeliveryOtp);
 orderRouter.post("/verify-delivery-otp", isAuth ,verifyDeliveryOtp);
 orderRouter.post("/place-order", isAuth ,placeOrder);

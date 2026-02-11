@@ -4,6 +4,15 @@ import orderModel from "../models/orderModel.js";
 import shopModel from "../models/shopModel.js";
 import userModel from "../models/userModel.js";
 import { sendDeliveryOtpMail } from "../utils/mail.js";
+import Razorpay from 'razorpay'
+import dotenv from 'dotenv'
+
+dotenv.config();
+
+let instance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 // place order
 export const placeOrder = async (req, res) => {
@@ -11,7 +20,7 @@ export const placeOrder = async (req, res) => {
     const { cardItems, paymentMethod, deliveryAddress, totalAmount } = req.body;
 
     // check card is not empty
-    if (cardItems == 0 || !cardItems) {
+    if (!cardItems || cardItems.length === 0) {
       return res.status(400).json({ message: "Card is Empty" });
     }
 
@@ -54,13 +63,39 @@ export const placeOrder = async (req, res) => {
           subTotal,
           shopOrderItems: items.map((i) => ({
             item: i.id,
-            price: i._price,
+            price: i.price,
             quantity: i.quantity,
             name: i.name,
           })),
         };
       })
     );
+
+    // online payment 
+    if(paymentMethod == "online"){
+      const razorOrder  = await instance.orders.create({
+        amount:Math.round(totalAmount*100),     // *100 => to convert into currency
+        currency:'INR',
+        receipt:`receipt_${Date.now()}`
+      })
+
+      const newOrder = await orderModel.create({
+      user: req.userId,
+      paymentMethod,
+      deliveryAddress,
+      totalAmount,
+      shopOrders,
+      razorpayOrderId: razorOrder.id,
+      payment:false 
+    });
+
+    return res.status(201).json({
+      razorOrder,
+      orderId:newOrder._id,
+      key_id: process.env.RAZORPAY_KEY_ID
+    });
+
+    }
 
     const newOrder = await orderModel.create({
       user: req.userId,
@@ -78,6 +113,38 @@ export const placeOrder = async (req, res) => {
 
   } catch (error) {
     return res.status(500).json({ message:`place order Error ${error}` });
+  }
+};
+
+// verify Online payment
+export const verifyPayment = async (req, res) => {
+  try {
+    const { razorpay_payment_id, orderId } = req.body;
+
+    const payment = await instance.payments.fetch(razorpay_payment_id);
+
+    if (!payment || payment.status !== "captured") {
+      return res.status(400).json({ message: "Payment not Captured" });
+    }
+
+    const order = await orderModel.findById(orderId);
+
+    if (!order) {
+      return res.status(400).json({ message: "Order not Found" });
+    }
+
+    order.payment = true;
+    order.razorpayPaymentId = razorpay_payment_id;
+
+    await order.save();
+
+    await order.populate("shopOrders.shopOrderItems.item", "name image price");
+    await order.populate("shopOrders.shop", "name");
+
+    return res.status(200).json(order);
+
+  } catch (error) {
+    return res.status(500).json({ message: `verify Order Error ${error}` });
   }
 };
 
@@ -111,7 +178,8 @@ export const getMyOrders = async(req, res) =>{
         user:order.user,
         shopOrders: order.shopOrders.find(o=>o.owner._id==req.userId),
         createdAt:user.createdAt,
-        deliveryAddress: order.deliveryAddress
+        deliveryAddress: order.deliveryAddress,
+        payment:order.payment
       })))
 
     return res.status(201).json(filteredOrders);

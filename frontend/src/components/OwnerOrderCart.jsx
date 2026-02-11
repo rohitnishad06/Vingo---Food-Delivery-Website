@@ -33,8 +33,10 @@ const OwnerOrderCart = ({ data }) => {
         <p className="text-sm text-gray-500">{data.user.email}</p>
         <p className="flex items-center gap-2 text-sm text-gray-600 mt-1">
           <FaPhone />
-          <span>{data.user.mobile}</span>
+          <span>{data.user.mobile}</span>  
         </p>
+        {data.paymentMethod=="online" ?<p className="text-sm text-gray-500">payment : {data.payment?"True":"False"}</p>:<p className="text-sm text-gray-500">Payment Method : {data.paymentMethod}</p>}
+        
       </div>
 
       {/* delivery address */}
