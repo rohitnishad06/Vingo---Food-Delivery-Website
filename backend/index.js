@@ -8,10 +8,25 @@ import authRouter from "./routes/authRoutes.js";
 import shopRouter from "./routes/shopRoutes.js";
 import itemRouter from "./routes/itemRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
+import http from 'http';
+import { Server } from "socket.io";
+import { socketHandler } from "./socket.js";
+
 
 dotenv.config();
 
 const app = express();
+
+// for socket.io integration 
+const server = http.createServer(app)
+const io = new Server(server,{
+  cors:{
+    origin: "http://localhost:5173",
+    credentials: true,
+    methods:['POST','GET'] 
+  }
+})
+app.set("io",io)
 
 const port = process.env.PORT || 5000;
 
@@ -30,8 +45,8 @@ app.use("/api/shop", shopRouter);
 app.use("/api/item", itemRouter);
 app.use("/api/order", orderRouter);
 
-
-app.listen(port, () => {
+socketHandler(io);
+server.listen(port, () => {
   connectDB();
   console.log(`Server is Running on Port ${8000}`);
 });

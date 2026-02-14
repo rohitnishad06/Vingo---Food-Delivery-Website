@@ -23,4 +23,4 @@ const useGetCurrentUser = () => {
 
 }
 
-export default useGetCurrentUser
+export default useGetCurrentUser;
