@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { serverUrl } from "../App";
 import DeliveryBoyTracking from "./DeliveryBoyTracking";
+import { setUserData } from "../redux/userSlice";
 
 const DeliveryBoyDahboard = () => {
   const { userData, socket } = useSelector((state) => state.user);
@@ -11,6 +12,8 @@ const DeliveryBoyDahboard = () => {
   const [currentOrder, setCurrentOrder] = useState();
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [otp, setOtp] = useState("");
+  const [deliveryBoyLocation, setDeliveryBoyLocation] = useState(null)
+  const [otpSending, setOtpSending] = useState(false);
 
   // get orders
   const getCurrentOrder = async () => {
@@ -62,10 +65,13 @@ const DeliveryBoyDahboard = () => {
         { withCredentials: true },
       );
       console.log(result.data);
+      setShowOtpBox(true);  
       setShowOtpBox(true);
     } catch (error) {
       console.log(error);
-    }
+    }finally {
+    setOtpSending(false);  // re-enable button after API finishes
+  }
   };
 
   // verify otp
@@ -87,12 +93,13 @@ const DeliveryBoyDahboard = () => {
   };
 
   // socket io
+  // handle real time delivery assignment
   useEffect(() => {
     if (!socket || !userData?._id) return;
 
     const handleDeliveryAssignment = (data) => {
       if (data.sendTo === userData._id) {
-        setAvailableAssignments(prev => [...prev, data])
+        setAvailableAssignments((prev) => [...prev, data]);
       }
     };
 
@@ -100,6 +107,36 @@ const DeliveryBoyDahboard = () => {
 
     return () => {
       socket.off("newAssignment", handleDeliveryAssignment);
+    };
+  }, [socket, userData?._id]);
+
+  // socket io
+  // handle real time traccking
+  useEffect(() => {
+    if (!socket || userData?.role !== "deliveryBoy") return;
+
+    let watchId;
+    if (navigator.geolocation) {
+      ((watchId = navigator.geolocation.watchPosition((position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        setDeliveryBoyLocation({lat:latitude, lon:longitude})
+        socket.emit("updateLocation", {
+          latitude,
+          longitude,
+          userId: userData?._id,
+        });
+      })),
+        (error) => {
+          console.log(error);
+        },
+        {
+          enableHighAccuracy: true,
+        });
+    }
+
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
     };
   }, [socket, userData?._id]);
 
@@ -120,9 +157,9 @@ const DeliveryBoyDahboard = () => {
           </h1>
           <p className="text-[#ff4d2d]">
             <span className="font-semibold">Latitute :</span>{" "}
-            {userData.location.coordinates[1]},{" "}
+            {deliveryBoyLocation?.lat ||userData.location.coordinates[1]},{" "}
             <span className="font-semibold">Longitude : </span>{" "}
-            {userData.location.coordinates[0]}
+            {deliveryBoyLocation?.lon || userData.location.coordinates[0]}
           </p>
         </div>
 
@@ -183,14 +220,26 @@ const DeliveryBoyDahboard = () => {
                 {currentOrder.shopOrder.subTotal}
               </p>
             </div>
-            <DeliveryBoyTracking data={currentOrder} />
+            <DeliveryBoyTracking
+              data={{
+                deliveryBoyLocation: deliveryBoyLocation || {
+                  lat: userData.location?.coordinates[1],
+                  lon: userData.location?.coordinates[0],
+                },
+                customerLocation: {
+                  lat: currentOrder.deliveryAddress.latitude,
+                  lon: currentOrder.deliveryAddress.longitude,
+                },
+              }}
+            />
 
             {!showOtpBox ? (
               <button
+                disabled={otpSending}
                 className="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200"
                 onClick={sendOtp}
               >
-                Marked As Delivered
+                {otpSending ? "Sending OTP..." : "Mark As Delivered"}
               </button>
             ) : (
               <div className="mt-2 p-4 border border-xl rounded-xl bg-gray-50">

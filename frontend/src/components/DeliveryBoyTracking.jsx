@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import scooter from "../assets/scooter.png";
 import home from "../assets/home.png";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapContainer, Marker, TileLayer, Polyline, Popup } from "react-leaflet";
+import { MapContainer, Marker, TileLayer, Polyline, Popup, useMap  } from "react-leaflet";
 
 const deliveryBoyIcon = new L.Icon({
   iconUrl: scooter,
@@ -30,9 +30,27 @@ const DeliveryBoyTracking = ({ data }) => {
 
   const center = [deliveryBoyLat, deliveryBoyLon];
 
+
+  const AutoFollow = ({ lat, lon }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (lat && lon) {
+      map.flyTo([lat, lon], map.getZoom(), {
+        animate: true,
+        duration: 1
+      });
+    }
+  }, [lat, lon]);
+
+  return null;
+};
+
+
   return (
     <div className="w-full h-[400px] mt-3 rounded-xl overflow-hidden shadow-md">
       <MapContainer center={center} zoom={13} className="w-full h-full">
+        <AutoFollow lat={deliveryBoyLat} lon={deliveryBoyLon} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

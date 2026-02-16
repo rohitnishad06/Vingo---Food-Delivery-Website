@@ -4,10 +4,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { serverUrl } from "../App";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import DeliveryBoyTracking from "../components/DeliveryBoyTracking";
+import { useSelector } from "react-redux";
 
 const TrackOrderPage = () => {
+  const { socket } = useSelector((state) => state.user);
   const { orderId } = useParams();
   const [currentOrder, setCurentOrder] = useState();
+  const [liveLocation, setLiveLocation] = useState({});
   const navigate = useNavigate();
 
   const handleGetOrder = async () => {
@@ -22,6 +25,30 @@ const TrackOrderPage = () => {
       console.log(error);
     }
   };
+
+
+  // socket io
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleUpdateDeliveryBoyLocation = ({
+      deliveryBoyId,
+      latitude,
+      longitude,
+    }) => {
+      setLiveLocation((prev) => ({
+        ...prev,
+        [deliveryBoyId]: { lat: latitude, lon: longitude },
+      }));
+    };
+
+    socket.on("updateDeliveryLocation", handleUpdateDeliveryBoyLocation);
+
+    return () => {
+      socket.off("updateDeliveryLocation", handleUpdateDeliveryBoyLocation);
+    };
+  }, [socket]);
+
 
   useEffect(() => {
     handleGetOrder();
@@ -49,7 +76,7 @@ const TrackOrderPage = () => {
             </p>
             <p className="font-semibold">
               <span>Items: </span>
-              {shopOrder?.shopOrderItems?.map((i) => i.name).join()}
+              {shopOrder?.shopOrderItems?.map((i) => i.name).join(", ")}
             </p>
             <p>
               <span className="font-semibold">SubTotal: </span>
@@ -84,22 +111,24 @@ const TrackOrderPage = () => {
             <p className="text-green-600 font-semibold text-lg">Delivered</p>
           )}
 
-          {(shopOrder.assignedDeliveryBoy && shopOrder.status != "delivered") && 
+          {shopOrder.assignedDeliveryBoy && shopOrder.status != "delivered" && (
             <div className="h-[400px] w-full rounded-2xl overflow-hidden shadow-md">
-              <DeliveryBoyTracking data={{
-                deliveryBoyLocation:{
-                  lat:shopOrder.assignedDeliveryBoy.location.coordinates[1],
-                  lon:shopOrder.assignedDeliveryBoy.location.coordinates[0]
-                },
-                customerLocation:{
-                  lat:currentOrder.deliveryAddress.latitude,
-                  lon:currentOrder.deliveryAddress.longitude
-                }
-              }}/>
-
+              <DeliveryBoyTracking
+                data={{
+                  deliveryBoyLocation: liveLocation[
+                    shopOrder.assignedDeliveryBoy._id
+                  ] || {
+                    lat: shopOrder.assignedDeliveryBoy?.location?.coordinates[1],
+                    lon: shopOrder.assignedDeliveryBoy?.location?.coordinates[0],
+                  },
+                  customerLocation: {
+                    lat: currentOrder.deliveryAddress.latitude,
+                    lon: currentOrder.deliveryAddress.longitude,
+                  },
+                }}
+              />
             </div>
-          }
-
+          )}
         </div>
       ))}
     </div>
