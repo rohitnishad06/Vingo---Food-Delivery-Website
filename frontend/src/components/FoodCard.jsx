@@ -87,7 +87,7 @@ const FoodCard = ({data}) => {
 
           {/* price */}
           <span className='font-bold txt-gra-900 text-lg'>
-            {data.price}
+            ₹{data.price}
           </span>
 
           {/* card */}

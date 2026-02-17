@@ -41,3 +41,4 @@ export const  updateUserLocation = async(req, res) =>{
     return res.status(400).json({ msg: `user Location update Error ${error}` });
   }
 }
+

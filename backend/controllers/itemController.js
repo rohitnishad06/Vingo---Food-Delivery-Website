@@ -198,3 +198,47 @@ export const searchItems = async (req, res) => {
   }
 };
 
+// rating to food
+export const ratingFood = async (req, res) => {
+  try {
+    const { itemId, rating } = req.body;
+
+    // 1. Check for missing fields
+    if (!itemId || rating === undefined) {
+      return res.status(400).json({ message: "Rating and Item ID are required" });
+    }
+
+    // 2. Fix: Use OR (||) for range validation
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: "Rating must be between 1 and 5" });
+    }
+
+    // 3. Fix: Pass the ID directly
+    const item = await itemModel.findById(itemId);
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // 4. Calculate new moving average
+    const currentCount = item.rating.count || 0;
+    const currentAverage = item.rating.average || 0;
+    
+    const newCount = currentCount + 1;
+    const newAverage = (currentAverage * currentCount + rating) / newCount;
+
+    // 5. Update and save
+    item.rating.average = newAverage;
+    item.rating.count = newCount;
+    await item.save();
+
+    return res.status(200).json({ 
+      success: true, 
+      rating: item.rating 
+    });
+
+  } catch (error) {
+    // Standardize error logging
+    console.error("Rating Error:", error);
+    return res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+};

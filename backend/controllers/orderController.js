@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// razor pay
 let instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -613,3 +614,5 @@ export const verifyDeliveryOtp = async (req, res) => {
       .json({ message: `verify delivery Otp Error ${error}` });
   }
 };
+
+export const 
