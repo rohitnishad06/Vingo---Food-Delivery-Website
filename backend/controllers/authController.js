@@ -100,12 +100,19 @@ export const signIn = async (req, res) => {
 // signOut controller
 export const signOut = async (req, res) => {
   try {
-    res.clearCookie("token");
-    return res.status(200).json({ msg: "logout Successfully" });
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
+
+    return res.status(200).json({ msg: "Logout Successfully" });
   } catch (error) {
     res.status(500).json(`SignOut error ${error}`);
   }
 };
+
 
 // Send OTP
 export const SendOtp = async(req, res) => {
