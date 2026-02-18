@@ -7,21 +7,24 @@ import { updateOrderStatus } from "../redux/userSlice";
 import { useState } from "react";
 
 const OwnerOrderCart = ({ data }) => {
-
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [availableBoys, setAvailableBoys] = useState([]);
 
   // handle order status
-  const handleUpdateStatus = async(orderId, shopId, status) =>{
+  const handleUpdateStatus = async (orderId, shopId, status) => {
     try {
-      const result = await axios.post(`${serverUrl}/api/order/update-status/${orderId}/${shopId}`, {status}, {withCredentials:true})
-      dispatch(updateOrderStatus({orderId, shopId, status }))
-      setAvailableBoys(result.data.availableBoys)
-      console.log(result.data)
+      const result = await axios.post(
+        `${serverUrl}/api/order/update-status/${orderId}/${shopId}`,
+        { status },
+        { withCredentials: true },
+      );
+      dispatch(updateOrderStatus({ orderId, shopId, status }));
+      setAvailableBoys(result.data.availableBoys);
+      console.log(result.data);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow p-4 space-y-4">
@@ -33,10 +36,17 @@ const OwnerOrderCart = ({ data }) => {
         <p className="text-sm text-gray-500">{data.user.email}</p>
         <p className="flex items-center gap-2 text-sm text-gray-600 mt-1">
           <FaPhone />
-          <span>{data.user.mobile}</span>  
+          <span>{data.user.mobile}</span>
         </p>
-        {data.paymentMethod=="online" ?<p className="text-sm text-gray-500">payment : {data.payment?"True":"False"}</p>:<p className="text-sm text-gray-500">Payment Method : {data.paymentMethod}</p>}
-        
+        {data.paymentMethod == "online" ? (
+          <p className="text-sm text-gray-500">
+            payment : {data.payment ? "True" : "False"}
+          </p>
+        ) : (
+          <p className="text-sm text-gray-500">
+            Payment Method : {data.paymentMethod}
+          </p>
+        )}
       </div>
 
       {/* delivery address */}
@@ -71,33 +81,65 @@ const OwnerOrderCart = ({ data }) => {
 
       {/* order status */}
       <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
-        <span className="text-sm">Status: <span className="font-semibold capitalize text-[#ff4d2d]">{data.shopOrders.status}</span></span>
+        <span className="text-sm">
+          Status:{" "}
+          <span className="font-semibold capitalize text-[#ff4d2d]">
+            {data.shopOrders.status}
+          </span>
+        </span>
 
-        <select value={data.shopOrders.status} className="rounded-md border px-3 py-1 text-sm focus:oultine-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d]" onChange={(e)=>handleUpdateStatus(data._id, data.shopOrders.shop._id, e.target.value)}> 
+        <select
+          value={data.shopOrders.status}
+          disabled={data.shopOrders.status === "out_of_delivery"}
+          className={`rounded-md border px-3 py-1 text-sm ${
+            data.shopOrders.status === "out_of_delivery"
+              ? "bg-gray-200 cursor-not-allowed"
+              : "border-[#ff4d2d] text-[#ff4d2d]"
+          }`}
+          onChange={(e) =>
+            handleUpdateStatus(
+              data._id,
+              data.shopOrders.shop._id,
+              e.target.value,
+            )
+          }
+        >
           <option value="pending">Pending</option>
           <option value="preparing">Preparing</option>
           <option value="out of delivery">Out of Delivery</option>
         </select>
-
       </div>
-        
-        {/* Show delivery Boys */}
-        {data.shopOrders.status=="out of delivery" && 
-          <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50 gap-4">
-            {data.shopOrders.assignedDeliveryBoy?<p>Assigned Delivery Boy :</p>:<p>Available Delivery Boys :</p>}
-            {availableBoys?.length>0 ?(
-              availableBoys.map((b, index) => (
-                <div className="text-gray-800"> {b.fullName} - {b.mobile}</div>
-              ))
-            ):data.shopOrders.assignedDeliveryBoy ? <div>{data.shopOrders.assignedDeliveryBoy.fullName} - {data.shopOrders.assignedDeliveryBoy.mobile}</div>:<div> Waiting for Delivery Boy to Accept</div>}
-          </div> 
-        }
+
+      {/* Show delivery Boys */}
+      {data.shopOrders.status == "out of delivery" && (
+        <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50 gap-4">
+          {data.shopOrders.assignedDeliveryBoy ? (
+            <p>Assigned Delivery Boy :</p>
+          ) : (
+            <p>Available Delivery Boys :</p>
+          )}
+          {availableBoys?.length > 0 ? (
+            availableBoys.map((b, index) => (
+              <div className="text-gray-800">
+                {" "}
+                {b.fullName} - {b.mobile}
+              </div>
+            ))
+          ) : data.shopOrders.assignedDeliveryBoy ? (
+            <div>
+              {data.shopOrders.assignedDeliveryBoy.fullName} -{" "}
+              {data.shopOrders.assignedDeliveryBoy.mobile}
+            </div>
+          ) : (
+            <div> Waiting for Delivery Boy to Accept</div>
+          )}
+        </div>
+      )}
 
       {/* total  */}
       <div className="text-right font-bold text-gray-800 text-sm">
         Total: ₹{data.shopOrders.subTotal}
       </div>
-
     </div>
   );
 };
