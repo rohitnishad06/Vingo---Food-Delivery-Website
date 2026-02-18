@@ -46,11 +46,12 @@ export const signUp = async (req, res) => {
       console.log(error)
     }
     res.cookie("token", token, {
-      secure: true, 
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 
     res.status(201).json(user);
   } catch (error) {
@@ -83,11 +84,12 @@ export const signIn = async (req, res) => {
       console.log(error)
     }
     res.cookie("token", token, {
-      secure: true, 
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 
     res.status(200).json(user);
   } catch (error) {
@@ -194,11 +196,12 @@ export const googleAuth = async (req, res) => {
       console.log(error)
     }
     res.cookie("token", token, {
-      secure: true, 
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});;
 
     res.status(201).json(user);
 
