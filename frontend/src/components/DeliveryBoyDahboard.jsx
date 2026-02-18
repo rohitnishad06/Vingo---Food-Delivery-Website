@@ -5,6 +5,8 @@ import axios from "axios";
 import { serverUrl } from "../App";
 import DeliveryBoyTracking from "./DeliveryBoyTracking";
 import { setUserData } from "../redux/userSlice";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ClipLoader } from "react-spinners";
 
 const DeliveryBoyDahboard = () => {
   const { userData, socket } = useSelector((state) => state.user);
@@ -13,7 +15,12 @@ const DeliveryBoyDahboard = () => {
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [otp, setOtp] = useState("");
   const [deliveryBoyLocation, setDeliveryBoyLocation] = useState(null)
-  const [otpSending, setOtpSending] = useState(false);
+  const [todaysDeliveries, setTodaysDeliveries] = useState();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const rateperDelivery = 50;
+  const totalEarning = todaysDeliveries?.reduce((sum, d) => sum + d.count *rateperDelivery,0)
 
   // get orders
   const getCurrentOrder = async () => {
@@ -58,24 +65,26 @@ const DeliveryBoyDahboard = () => {
 
   // send otp
   const sendOtp = async () => {
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverUrl}/api/order/send-delivery-otp`,
         { orderId: currentOrder._id, shopOrderId: currentOrder.shopOrder._id },
         { withCredentials: true },
       );
+
       console.log(result.data);
+      setLoading(false)
       setShowOtpBox(true);  
-      setShowOtpBox(true);
     } catch (error) {
       console.log(error);
-    }finally {
-    setOtpSending(false);  // re-enable button after API finishes
-  }
+      setLoading(false)
+    }
   };
 
   // verify otp
   const verifyOtp = async () => {
+    setMessage("")
     try {
       const result = await axios.post(
         `${serverUrl}/api/order/verify-delivery-otp`,
@@ -86,6 +95,22 @@ const DeliveryBoyDahboard = () => {
         },
         { withCredentials: true },
       );
+      console.log(result.data);
+      setMessage(result.data.message)
+      location.reload()
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+    // Todays delivery
+  const handleTodayDeliveries = async () => {
+    try {
+      const result = await axios.get(
+        `${serverUrl}/api/order/get-today-deliveries`,
+        { withCredentials: true },
+      );
+      setTodaysDeliveries(result.data)
       console.log(result.data);
     } catch (error) {
       console.log(error);
@@ -143,6 +168,7 @@ const DeliveryBoyDahboard = () => {
   useEffect(() => {
     getAssignments();
     getCurrentOrder();
+    handleTodayDeliveries();
   }, []);
 
   return (
@@ -161,6 +187,27 @@ const DeliveryBoyDahboard = () => {
             <span className="font-semibold">Longitude : </span>{" "}
             {deliveryBoyLocation?.lon || userData.location.coordinates[0]}
           </p>
+        </div>
+
+        {/* Todays delivery Chart */}
+        <div className="bg-white rounded-2xl shadow-md p-5 w-[90%] mb-6 borser border-orange-100">
+          <h1 className="text-lg font-bold mb-3 text-[#ff4d2d]">Todays Deliveries</h1>
+
+          <ResponsiveContainer width="100%" height={200} >
+            <BarChart data={todaysDeliveries}>
+              <CartesianGrid strokeDasharray="3 3"/>
+                <XAxis dataKey="hour" tickFormatter={(h) => `${h}:00`}/>
+                <YAxis dataKey="count" allowDecimals={false}/>
+                <Tooltip formatter={(value) => [value, "orders"]} labelFormatter={(label) => `${label} : 00`}/>
+                  <Bar dataKey="count" fill="#ff4d2d"/>
+            </BarChart>
+          </ResponsiveContainer>
+
+          <div className="max-w-sm mx-auto mt-6 p-6 bg-white rounded-2xl shadow-lg text-center">
+            <h1 className="text-xl font-semibold text-gray-800 mb-2 ">Today's Earning</h1>
+            <span className="text-3xl font-bold text-green-600">₹{totalEarning}</span>
+          </div>
+
         </div>
 
         {/* available orders */}
@@ -235,11 +282,11 @@ const DeliveryBoyDahboard = () => {
 
             {!showOtpBox ? (
               <button
-                disabled={otpSending}
+                disabled={loading}
                 className="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200"
                 onClick={sendOtp}
               >
-                {otpSending ? "Sending OTP..." : "Mark As Delivered"}
+                {loading?<ClipLoader size={20} color="white"/>:"Mark as Delivered"}
               </button>
             ) : (
               <div className="mt-2 p-4 border border-xl rounded-xl bg-gray-50">
@@ -256,6 +303,7 @@ const DeliveryBoyDahboard = () => {
                   onChange={(e) => setOtp(e.target.value)}
                   value={otp}
                 />
+                {message && <p className="text-center text-green-600">{message}</p>}
                 <button
                   className="mt-4 w-full bg-orange-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-orange-600 active:scale-95 transition-all duration-200"
                   onClick={verifyOtp}
