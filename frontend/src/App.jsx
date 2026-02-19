@@ -25,8 +25,9 @@ import { useEffect } from "react";
 import { setSocket } from "./redux/userSlice";
 import { io } from "socket.io-client";
 import axios from "axios";
+import CompleteProfile from "./components/CompleteProfile";
 
-export const serverUrl = "https://vingo-backend-rgqt.onrender.com";
+export const serverUrl = "http://localhost:8000";
 const App = () => {
 
   useGetCurrentUser();
@@ -68,7 +69,6 @@ const App = () => {
       <Route path="/signup" element={!userData? <SignUp/> : <Navigate to={'/'} />} />
       <Route path="/signin" element={!userData? <SignIn/> : <Navigate to={'/'} />} />
       <Route path="/forgot-password" element={!userData? <ForgotPassword/> : <Navigate to={'/'}/>}/>
-      <Route path="/" element={userData? <HomePage/> : <Navigate to={'/signin'}/>}/>
       <Route path="/create-edit-shop" element={userData? <CreateEditShop/> : <Navigate to={'/signin'}/>}/>
       <Route path="/add-item" element={userData? <AddItem/> : <Navigate to={'/signin'}/>}/>
       <Route path="/edit-item/:id" element={userData? <EditItem/> : <Navigate to={'/signin'}/>}/>
@@ -78,6 +78,26 @@ const App = () => {
       <Route path="/my-orders" element={userData? <MyOrders/> : <Navigate to={'/signin'}/>}/>
       <Route path="/track-order/:orderId" element={userData? <TrackOrderPage/> : <Navigate to={'/signin'}/>}/>
       <Route path="/shop/:shopId" element={userData? <Shop/> : <Navigate to={'/signin'}/>}/>
+      <Route path="/"
+        element={
+          userData
+            ? (!userData.fullName || !userData.mobile || !userData.role)
+              ? <Navigate to="/complete-profile" replace />
+              : <HomePage />
+            : <Navigate to="/signin" replace />
+        }
+      />
+      <Route
+        path="/complete-profile"
+        element={
+          userData
+            ? (!userData.fullName || !userData.mobile || !userData.role)
+              ? <CompleteProfile />
+              : <Navigate to="/" replace />
+            : <Navigate to="/signin" replace />
+        }
+      />
+
     </Routes>
   );
 };

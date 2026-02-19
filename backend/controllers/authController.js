@@ -166,17 +166,56 @@ export const googleAuth = async (req, res) => {
     let user = await userModel.findOne({ email });
 
     if (!user) {
-      user = await userModel.create({ fullName, email, mobile, role });
+      // If full data provided → create complete user
+      user = await userModel.create({
+        email,
+        fullName,
+        mobile,
+        role,
+      });
+    } else {
+      // Update missing fields if provided
+      if (!user.fullName && fullName) user.fullName = fullName;
+      if (!user.mobile && mobile) user.mobile = mobile;
+      if (!user.role && role) user.role = role;
+
+      await user.save();
     }
 
     const token = genToken(user._id);
 
-    return res.status(201).json({
+    const isProfileComplete =
+      !!(user.fullName && user.mobile && user.role);
+
+    res.status(201).json({
       user,
       token,
+      isProfileComplete,
     });
 
   } catch (error) {
-    return res.status(500).json({ msg: `Google Auth error ${error}` });
+    res.status(500).json({ msg: `Google Auth error ${error}` });
+  }
+};
+
+//================= Complete Profile =================
+export const completeProfile = async (req, res) => {
+  try {
+    const { fullName, mobile, role } = req.body;
+
+    const user = await userModel.findById(req.userId);
+
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    user.fullName = fullName;
+    user.mobile = mobile;
+    user.role = role;
+
+    await user.save();
+
+    res.status(200).json(user);
+
+  } catch (error) {
+    res.status(500).json({ message: `Profile update error ${error}`});
   }
 };

@@ -51,17 +51,23 @@ const SignIn = () => {
   const handleGoogleAuth = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-
+    setLoading(true);
     try {
       const { data } = await axios.post(`${serverUrl}/api/auth/google-auth`, {
         email: result.user.email,
       });
       localStorage.setItem("token", data.token);
       dispatch(setUserData(data.user));
-      navigate("/");
+      if (!data.isProfileComplete) {
+        navigate("/complete-profile",{ replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       console.log(error);
-    }
+    } finally {
+    setLoading(false);
+  }
   };
 
   return (
