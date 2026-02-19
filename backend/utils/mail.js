@@ -3,13 +3,16 @@ import dotenv from 'dotenv'
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  port: 465,
-  secure: true, // Use true for port 465, false for port 587
+  host: "smtp.gmail.com", // 'service: Gmail' ki jagah host use karna better hota hai
+  port: 587,              // 465 ki jagah 587 use karein frr production
+  secure: false, // Use true for port 465, false for port 587
   auth: {
     user: process.env.EMAIL,
     pass: process.env.PASS,
   },
+  tls: {
+    rejectUnauthorized: false // Ye line cloud servers par connection timeout rokne mein help karti hai
+  }
 });
 
 export const sendOtpMail = async(to,otp) => {
