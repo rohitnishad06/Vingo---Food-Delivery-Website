@@ -15,6 +15,15 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Verify connection configuration
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log("Transporter Verification Error:", error);
+  } else {
+    console.log("Server is ready to take our messages");
+  }
+});
+
 export const sendOtpMail = async(to,otp) => {
   await transporter.sendMail({
     from: process.env.EMAIL,
