@@ -19,7 +19,7 @@ const ForgotPassword = () => {
 
   //Send Otp
   const handleSendOtp = async () => {
-    setLoading(false)
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/send-otp`,
@@ -29,16 +29,16 @@ const ForgotPassword = () => {
       console.log(result);
       setStep(2);
       setErr("");
-      setLoading(true)
+      setLoading(false)
     } catch (error) {
       setErr(error?.response?.data?.msg || "Something went wrong");
-      setLoading(true)
+      setLoading(false)
     }
   };
 
   //Verify Otp
   const handleVerifyOtp = async () => {
-    setLoading(false)
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/verify-otp`,
@@ -48,16 +48,16 @@ const ForgotPassword = () => {
       console.log(result);
       setStep(3);
       setErr("");
-      setLoading(true)
+      setLoading(false)
     } catch (error) {
      setErr(error?.response?.data?.msg || "Something went wrong");
-     setLoading(true)
+     setLoading(false)
     }
   };
 
   //Reset Password
   const handleResetPassword = async () => {
-    setLoading(false)
+    setLoading(true)
     if (newPassword != confirmPassword) {
       return null;
     }
@@ -70,10 +70,10 @@ const ForgotPassword = () => {
       console.log(result);
       navigate("/signin");
       setErr("");
-      setLoading(true)
+      setLoading(false)
     } catch (error) {
       setErr(error?.response?.data?.msg || "Something went wrong");
-      setLoading(true)
+      setLoading(false)
     }
   };
 
