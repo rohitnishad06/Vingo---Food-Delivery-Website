@@ -90,12 +90,7 @@ const OwnerOrderCart = ({ data }) => {
 
         <select
           value={data.shopOrders.status}
-          disabled={data.shopOrders.status === "out_of_delivery"}
-          className={`rounded-md border px-3 py-1 text-sm ${
-            data.shopOrders.status === "out_of_delivery"
-              ? "bg-gray-200 cursor-not-allowed"
-              : "border-[#ff4d2d] text-[#ff4d2d]"
-          }`}
+          className="rounded-md border px-3 py-1 text-sm focus:oultine-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d]"
           onChange={(e) =>
             handleUpdateStatus(
               data._id,
