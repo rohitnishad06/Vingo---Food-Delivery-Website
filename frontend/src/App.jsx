@@ -27,7 +27,7 @@ import { io } from "socket.io-client";
 import axios from "axios";
 import CompleteProfile from "./components/CompleteProfile";
 
-export const serverUrl = "http://localhost:8000";
+export const serverUrl = "https://vingo-backend-rgqt.onrender.com";
 const App = () => {
 
   useGetCurrentUser();
