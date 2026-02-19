@@ -17,6 +17,10 @@ dotenv.config();
 
 const app = express();
 
+// for deployment on render 
+app.set("trust proxy", 1);
+
+
 // for socket.io integration 
 const server = http.createServer(app)
 const io = new Server(server,{

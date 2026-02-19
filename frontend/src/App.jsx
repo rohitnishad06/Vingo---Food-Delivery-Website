@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import SignUp from "./pages/signUp";
-import SignIn from "./pages/signIn";
+import SignUp from "./pages/SignUp";
+import SignIn from "./pages/SignIn";
 import ForgotPassword from "./pages/ForgotPassword";
 import useGetCurrentUser from "./hooks/useGetCurrentUser";
 import { useDispatch, useSelector } from "react-redux";

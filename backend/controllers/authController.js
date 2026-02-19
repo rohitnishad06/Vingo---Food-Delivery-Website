@@ -46,11 +46,12 @@ export const signUp = async (req, res) => {
       console.log(error)
     }
     res.cookie("token", token, {
-      secure: process.env.NODE_ENV === "production", 
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 
     res.status(201).json(user);
   } catch (error) {
@@ -83,11 +84,12 @@ export const signIn = async (req, res) => {
       console.log(error)
     }
     res.cookie("token", token, {
-      secure: process.env.NODE_ENV === "production", 
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
 
     res.status(200).json(user);
   } catch (error) {
@@ -98,12 +100,19 @@ export const signIn = async (req, res) => {
 // signOut controller
 export const signOut = async (req, res) => {
   try {
-    res.clearCookie("token");
-    return res.status(200).json({ msg: "logout Successfully" });
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
+
+    return res.status(200).json({ msg: "Logout Successfully" });
   } catch (error) {
     res.status(500).json(`SignOut error ${error}`);
   }
 };
+
 
 // Send OTP
 export const SendOtp = async(req, res) => {
@@ -194,11 +203,12 @@ export const googleAuth = async (req, res) => {
       console.log(error)
     }
     res.cookie("token", token, {
-      secure: process.env.NODE_ENV === "production", 
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});;
 
     res.status(201).json(user);
 
