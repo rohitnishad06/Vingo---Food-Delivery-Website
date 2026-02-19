@@ -21,7 +21,6 @@ const useGetCurrentUser = () => {
 
         dispatch(setUserData(result.data));
       } catch (error) {
-        localStorage.removeItem("token");  // invalid token cleanup
         dispatch(setUserData(null));
       }
     };

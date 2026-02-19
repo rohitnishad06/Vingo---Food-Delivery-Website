@@ -63,26 +63,6 @@ const App = () => {
   },[userData?._id])
 
 
-
-
-useEffect(() => {
-  const interceptor = axios.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  });
-
-  return () => {
-    axios.interceptors.request.eject(interceptor);
-  };
-}, []);
-
-
-
   return (
     <Routes>
       <Route path="/signup" element={!userData? <SignUp/> : <Navigate to={'/'} />} />
