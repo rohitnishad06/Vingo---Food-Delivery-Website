@@ -1,32 +1,52 @@
-import nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
+import axios from "axios";
+import dotenv from "dotenv";
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  port: 465,
-  secure: true, // Use true for port 465, false for port 587
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.PASS,
-  },
-});
+const sendEmail = async (to, subject, htmlContent) => {
+  try {
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: {
+          name: "Vingo",
+          email: process.env.EMAIL, // verified sender email in Brevo
+        },
+        to: [{ email: to }],
+        subject,
+        htmlContent,
+      },
+      {
+        headers: {
+          "api-key": process.env.BREVO_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-export const sendOtpMail = async(to,otp) => {
-  await transporter.sendMail({
-    from: process.env.EMAIL,
+    console.log("Email sent successfully:", response.data);
+  } catch (error) {
+    console.error(
+      "Brevo Email Error:",
+      error.response?.data || error.message
+    );
+    throw new Error("Failed to send email");
+  }
+};
+
+// Password Reset OTP
+export const sendOtpMail = async (to, otp) => {
+  await sendEmail(
     to,
-    subject:"Reset Your Password",
-    html:`<p>Your OTP for Password Reset is <b>${otp}</b>. It Expires in 5 minutes. </p>`
-  })
-}
+    "Reset Your Password",
+    `<p>Your OTP for Password Reset is <b>${otp}</b>. It expires in 5 minutes.</p>`
+  );
+};
 
-
-export const sendDeliveryOtpMail = async(user,otp) => {
-  await transporter.sendMail({
-    from: process.env.EMAIL,
-    to: user.email,
-    subject:"Delivery OTP",
-    html:`<p>Your OTP for Delivery is <b>${otp}</b>. It Expires in 5 minutes. </p>`
-  })
-}
+// Delivery OTP
+export const sendDeliveryOtpMail = async (user, otp) => {
+  await sendEmail(
+    user.email,
+    "Delivery OTP",
+    `<p>Your OTP for Delivery is <b>${otp}</b>. It expires in 5 minutes.</p>`
+  );
+};
