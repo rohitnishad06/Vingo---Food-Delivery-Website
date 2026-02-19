@@ -50,7 +50,7 @@ const CheckOut = () => {
             latitude: location.lat,
             longitude: location.lon,
           },
-          totalAmount,
+          totalAmount: amountWithDeliveryFee,
           cardItems,
         },
         { withCredentials: true },
