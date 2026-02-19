@@ -41,7 +41,7 @@ const CreateEditShop = () => {
       if(backendImg){
         formData.append("image",backendImg)
       }
-      const result = await axios.post(`${serverUrl}/api/shop/create-edit`, formData,{withCredentials:true})
+      const result = await axios.post(`${serverUrl}/api/shop/create-edit`, formData)
       dispatch(setMyShopData(result.data))
       setLoading(false)
       navigate('/')

@@ -57,7 +57,7 @@ const AddItem = () => {
       if(backendImg){
         formData.append("image",backendImg)
       }
-      const result = await axios.post(`${serverUrl}/api/item/add-item`, formData,{withCredentials:true})
+      const result = await axios.post(`${serverUrl}/api/item/add-item`, formData)
       dispatch(setMyShopData(result.data))
       setLoading(false)
       navigate('/')

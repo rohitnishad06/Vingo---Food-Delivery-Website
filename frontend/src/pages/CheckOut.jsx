@@ -52,8 +52,7 @@ const CheckOut = () => {
           },
           totalAmount: amountWithDeliveryFee,
           cardItems,
-        },
-        { withCredentials: true },
+        }
       );
       if (paymentMethod == "cod") {
         dispatch(addMyOrders(result.data));
@@ -84,8 +83,7 @@ const CheckOut = () => {
             {
               razorpay_payment_id: response.razorpay_payment_id,
               orderId,
-            },
-            { withCredentials: true },
+            }
           );
           dispatch(addMyOrders(result.data));
           navigate("/order-placed");
@@ -131,7 +129,6 @@ const CheckOut = () => {
       const result = await axios.get(
         `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lng}&format=json&apiKey=${apiKey}`,
       );
-      console.log(result?.data?.results[0].address_line2);
       dispatch(setDeliveryAddress(result?.data?.results[0].address_line2));
     } catch (error) {
       console.log(error);

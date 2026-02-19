@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import UserOrdercart from "../components/UserOrdercart";
 import OwnerOrderCart from "../components/OwnerOrderCart";
 import { data, useNavigate } from "react-router-dom";
-import { addMyOrders, setMyOrder, updateRealTimeOrderStatus } from "../redux/userSlice";
+import {
+  addMyOrders,
+  setMyOrder,
+  updateRealTimeOrderStatus,
+} from "../redux/userSlice";
 
 const MyOrders = () => {
   const { userData, myOrders, socket } = useSelector((state) => state.user);
@@ -21,11 +25,12 @@ const MyOrders = () => {
       }
     };
 
-    const handleOrderStatus = ({shopId, userId, orderId, status}) => {
-      if(userId == userData._id){
-        dispatch(updateRealTimeOrderStatus({orderId, shopId, status}))
+    // socket io
+    const handleOrderStatus = ({ shopId, userId, orderId, status }) => {
+      if (userId == userData._id) {
+        dispatch(updateRealTimeOrderStatus({ orderId, shopId, status }));
       }
-    }
+    };
 
     socket?.on("newOrder", handleNewOrder);
     socket?.on("update-status", handleOrderStatus);

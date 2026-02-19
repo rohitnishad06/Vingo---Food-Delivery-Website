@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
-import { ClipLoader } from "react-spinners"
+import { ClipLoader } from "react-spinners";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 
@@ -19,42 +19,48 @@ const SignIn = () => {
   const borderColor = "#ddd";
 
   const [showPassword, setShowPassword] = useState(false);
-  const [err, setErr] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // handle Signin
-  const handleSignIn = async() => {
-    setLoading(true)
+  const handleSignIn = async () => {
+    setLoading(true);
     try {
-      const result = await axios.post(`${serverUrl}/api/auth/signin`,{email,password},{withCredentials:true})
-      dispatch(setUserData(result.data))
-      setErr("")
-      setLoading(false)
+      const result = await axios.post(`${serverUrl}/api/auth/signin`, {
+        email,
+        password,
+      });
+      localStorage.setItem("token", result.data.token);
+      dispatch(setUserData(result.data.user));
+      navigate("/");
+      setErr("");
+      setLoading(false);
     } catch (error) {
       setErr(error?.response?.data?.msg || "Something went wrong");
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // google auth
   const handleGoogleAuth = async () => {
-
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
 
     try {
-      const {data} = await axios.post(`${serverUrl}/api/auth/google-auth`,{
-        email:result.user.email, 
-      },{withCredentials:true})
-      dispatch(setUserData(data))
+      const { data } = await axios.post(`${serverUrl}/api/auth/google-auth`, {
+        email: result.user.email,
+      });
+      localStorage.setItem("token", data.token);
+      dispatch(setUserData(data.user));
+      navigate("/");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -96,7 +102,6 @@ const SignIn = () => {
           />
         </div>
 
-
         {/* password */}
         <div className="mb-4">
           <label
@@ -126,7 +131,10 @@ const SignIn = () => {
         </div>
 
         {/* forgot Password */}
-        <div className="text-right mb-4 text-[#ff4d2d] font-medium cursor-pointer" onClick={()=>navigate('/forgot-password')}>
+        <div
+          className="text-right mb-4 text-[#ff4d2d] font-medium cursor-pointer"
+          onClick={() => navigate("/forgot-password")}
+        >
           Forgot Password
         </div>
 
@@ -136,18 +144,27 @@ const SignIn = () => {
           onClick={handleSignIn}
           disabled={loading}
         >
-          {loading?<ClipLoader size={20} color="white"/>:"SignIn"}
+          {loading ? <ClipLoader size={20} color="white" /> : "SignIn"}
         </button>
 
         {err && <p className="text-red-500 text-center my-[10px]">*{err}</p>}
 
         {/* Google btn */}
-        <button className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100 cursor-pointer" onClick={handleGoogleAuth}>
+        <button
+          className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100 cursor-pointer"
+          onClick={handleGoogleAuth}
+        >
           <FcGoogle size={20} />
           <span>SignIn with Google</span>
         </button>
 
-        <p className="text-center mt-6 cursor-pointer" onClick={() => navigate("/signup")}>Want to create new Account ? <span className="text-[#ff4d2d]">SignUp</span></p>
+        <p
+          className="text-center mt-6 cursor-pointer"
+          onClick={() => navigate("/signup")}
+        >
+          Want to create new Account ?{" "}
+          <span className="text-[#ff4d2d]">SignUp</span>
+        </p>
       </div>
     </div>
   );

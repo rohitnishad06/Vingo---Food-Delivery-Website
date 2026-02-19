@@ -6,21 +6,29 @@ import { useDispatch } from 'react-redux'
 import { setUserData } from '../redux/userSlice'
 
 const useGetCurrentUser = () => {
+  const dispatch = useDispatch();
 
-  const dispatch = useDispatch()
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
-  useEffect(()=>{
-    const fetchUser = async() => {
+    if (!token) return;   // important
+
+    const fetchUser = async () => {
       try {
-        const result = await axios.get(`${serverUrl}/api/user/current`, {withCredentials:true})
-        dispatch(setUserData(result.data))
-      } catch (error) {
-        console.log(error)
-      }
-    } 
-    fetchUser()
-  },[])
+        const result = await axios.get(
+          `${serverUrl}/api/user/current`
+        );
 
-}
+        dispatch(setUserData(result.data));
+      } catch (error) {
+        localStorage.removeItem("token");  // invalid token cleanup
+        dispatch(setUserData(null));
+      }
+    };
+
+    fetchUser();
+  }, []);
+};
+
 
 export default useGetCurrentUser;

@@ -26,10 +26,8 @@ const DeliveryBoyDahboard = () => {
   const getCurrentOrder = async () => {
     try {
       const result = await axios.get(
-        `${serverUrl}/api/order/get-current-order`,
-        { withCredentials: true },
+        `${serverUrl}/api/order/get-current-order`
       );
-      console.log(result.data);
       setCurrentOrder(result.data);
     } catch (error) {
       console.log(error);
@@ -39,10 +37,7 @@ const DeliveryBoyDahboard = () => {
   // get assignment
   const getAssignments = async () => {
     try {
-      const result = await axios.get(`${serverUrl}/api/order/get-assignments`, {
-        withCredentials: true,
-      });
-      console.log(result.data);
+      const result = await axios.get(`${serverUrl}/api/order/get-assignments`);
       setAvailableAssignments(result.data);
     } catch (error) {
       console.log(error);
@@ -53,10 +48,7 @@ const DeliveryBoyDahboard = () => {
   const acceptOrder = async (assignmentId) => {
     try {
       const result = await axios.get(
-        `${serverUrl}/api/order/accept-order/${assignmentId}`,
-        { withCredentials: true },
-      );
-      console.log(result.data);
+        `${serverUrl}/api/order/accept-order/${assignmentId}`);
       await getCurrentOrder();
     } catch (error) {
       console.log(error);
@@ -69,11 +61,8 @@ const DeliveryBoyDahboard = () => {
     try {
       const result = await axios.post(
         `${serverUrl}/api/order/send-delivery-otp`,
-        { orderId: currentOrder._id, shopOrderId: currentOrder.shopOrder._id },
-        { withCredentials: true },
+        { orderId: currentOrder._id, shopOrderId: currentOrder.shopOrder._id }
       );
-
-      console.log(result.data);
       setLoading(false)
       setShowOtpBox(true);  
     } catch (error) {
@@ -92,10 +81,8 @@ const DeliveryBoyDahboard = () => {
           orderId: currentOrder._id,
           shopOrderId: currentOrder.shopOrder._id,
           otp,
-        },
-        { withCredentials: true },
+        }
       );
-      console.log(result.data);
       setMessage(result.data.message)
       location.reload()
     } catch (error) {
@@ -107,11 +94,9 @@ const DeliveryBoyDahboard = () => {
   const handleTodayDeliveries = async () => {
     try {
       const result = await axios.get(
-        `${serverUrl}/api/order/get-today-deliveries`,
-        { withCredentials: true },
+        `${serverUrl}/api/order/get-today-deliveries`
       );
       setTodaysDeliveries(result.data)
-      console.log(result.data);
     } catch (error) {
       console.log(error);
     }

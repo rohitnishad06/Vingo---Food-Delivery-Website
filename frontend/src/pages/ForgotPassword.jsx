@@ -23,10 +23,8 @@ const ForgotPassword = () => {
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/send-otp`,
-        { email },
-        { withCredentials: true }
+        { email }
       );
-      console.log(result);
       setStep(2);
       setErr("");
       setLoading(false)
@@ -42,10 +40,8 @@ const ForgotPassword = () => {
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/verify-otp`,
-        { email, otp },
-        { withCredentials: true }
+        { email, otp }
       );
-      console.log(result);
       setStep(3);
       setErr("");
       setLoading(false)
@@ -64,10 +60,8 @@ const ForgotPassword = () => {
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/reset-password`,
-        { email, newPassword },
-        { withCredentials: true }
+        { email, newPassword }
       );
-      console.log(result);
       navigate("/signin");
       setErr("");
       setLoading(false)

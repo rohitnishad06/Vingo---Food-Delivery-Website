@@ -18,8 +18,7 @@ const Shop = () => {
   const handleShop = async () => {
     try {
       const result = await axios.get(
-        `${serverUrl}/api/item/get-by-shop/${shopId}`,
-        { withCredentials: true },
+        `${serverUrl}/api/item/get-by-shop/${shopId}`
       );
       console.log(result.data);
       setItems(result.data.items);

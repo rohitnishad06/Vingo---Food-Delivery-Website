@@ -61,7 +61,7 @@ const EditItem = () => {
       if(backendImg){
         formData.append("image",backendImg)
       }
-      const result = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`, formData,{withCredentials:true})
+      const result = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`, formData)
 
       dispatch(setMyShopData(result.data))
       setLoading(false)
@@ -75,7 +75,7 @@ const EditItem = () => {
   useEffect(()=>{
     const handleGetItemById = async() =>{
        try {
-        const result = await axios.get(`${serverUrl}/api/item/get-by-id/${itemId}`,{withCredentials:true})
+        const result = await axios.get(`${serverUrl}/api/item/get-by-id/${itemId}`)
         setCurrentItem(result.data);
        } catch (error) {
         console.log(error)

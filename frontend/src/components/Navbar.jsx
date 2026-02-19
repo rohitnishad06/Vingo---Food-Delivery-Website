@@ -20,21 +20,16 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
 
-  const handleLogout = async () => {
-    try {
-      const result = await axios.get(`${serverUrl}/api/auth/signout`, {
-        withCredentials: true,
-      });
-      dispatch(setUserData(null));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const handleLogout = () => {
+  localStorage.removeItem("token");
+  dispatch(setUserData(null));
+  navigate("/signin");
+};
 
     // search handler
     const handleSearchitems = async() => {
       try {
-        const result = await axios.get(`${serverUrl}/api/item/search-items?query=${query}&city=${city}`,{withCredentials:true})
+        const result = await axios.get(`${serverUrl}/api/item/search-items?query=${query}&city=${city}`)
         dispatch(setSearchitems(result.data));
       } catch (error) {
         console.log(error)

@@ -24,6 +24,7 @@ import Shop from "./pages/Shop";
 import { useEffect } from "react";
 import { setSocket } from "./redux/userSlice";
 import { io } from "socket.io-client";
+import axios from "axios";
 
 export const serverUrl = "https://vingo-backend-rgqt.onrender.com";
 const App = () => {
@@ -43,7 +44,12 @@ const App = () => {
   // socket io
    useEffect(() => {
     if (!userData?._id) return;
-    const socketInstance = io(serverUrl, {withCredentials: true})
+    const socketInstance = io(serverUrl, {
+  auth: {
+    token: localStorage.getItem("token")
+  }
+});
+
     dispatch(setSocket(socketInstance))
     socketInstance.on("connect",() => {
       if(userData){
@@ -55,6 +61,26 @@ const App = () => {
       socketInstance.disconnect()
     }
   },[userData?._id])
+
+
+
+
+useEffect(() => {
+  const interceptor = axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  });
+
+  return () => {
+    axios.interceptors.request.eject(interceptor);
+  };
+}, []);
+
 
 
   return (

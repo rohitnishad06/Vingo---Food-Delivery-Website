@@ -9,19 +9,24 @@ const useGetMyOrders = () => {
 
   const dispatch = useDispatch()
 
-  useEffect(()=>{
-    const fetchOrders = async() => {
-      
-      try {
-        const result = await axios.get(`${serverUrl}/api/order/my-orders`, {withCredentials:true})
-        dispatch(setMyOrder(result.data))
-        console.log(result.data)
-      } catch (error) {
-        console.log(error)
-      }
-    } 
-    fetchOrders()
-  },[])
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const fetchOrders = async () => {
+    try {
+      const result = await axios.get(
+        `${serverUrl}/api/order/my-orders`
+      );
+      dispatch(setMyOrder(result.data));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  fetchOrders();
+}, []);
+
 
 }
 

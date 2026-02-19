@@ -8,7 +8,7 @@ import { data, useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
-import { ClipLoader } from "react-spinners"
+import { ClipLoader } from "react-spinners";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 
@@ -19,9 +19,8 @@ const SignUp = () => {
   const borderColor = "#ddd";
 
   const [showPassword, setShowPassword] = useState(false);
-  const [err, setErr] = useState("")
-  const [loading, setLoading] = useState(false)
-
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [role, setRole] = useState("user");
   const [fullName, setFullName] = useState("");
@@ -30,43 +29,49 @@ const SignUp = () => {
   const [mobile, setMobile] = useState("");
 
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handleSignUp = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const result = await axios.post(
-        `${serverUrl}/api/auth/signup`,
-        { fullName, email, password, mobile, role },
-        { withCredentials: true }
-      );
-      dispatch(setUserData(result.data))
+      const result = await axios.post(`${serverUrl}/api/auth/signup`, {
+        fullName,
+        email,
+        password,
+        mobile,
+        role,
+      });
+      localStorage.setItem("token", result.data.token);
+      dispatch(setUserData(result.data.user));
+      navigate("/");
       setErr("");
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       setErr(error?.response?.data?.msg || "Something went wrong");
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   // google auth
   const handleGoogleAuth = async () => {
     if (!mobile) {
-      return setErr("Mobile Number is required")
+      return setErr("Mobile Number is required");
     }
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
 
     try {
-      const {data} = await axios.post(`${serverUrl}/api/auth/google-auth`,{
-        fullName:result.user.displayName,
-        email:result.user.email,
+      const { data } = await axios.post(`${serverUrl}/api/auth/google-auth`, {
+        fullName: result.user.displayName,
+        email: result.user.email,
         role,
-        mobile
-      },{withCredentials:true})
-      dispatch(setUserData(data))
+        mobile,
+      });
+      localStorage.setItem("token", data.token);
+      dispatch(setUserData(data.user));
+      navigate("/");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -209,7 +214,7 @@ const SignUp = () => {
           onClick={handleSignUp}
           disabled={loading}
         >
-          {loading?<ClipLoader size={20} color="white"/>:"SignUp"}
+          {loading ? <ClipLoader size={20} color="white" /> : "SignUp"}
         </button>
 
         {err && <p className="text-red-500 text-center my-[10px]">*{err}</p>}

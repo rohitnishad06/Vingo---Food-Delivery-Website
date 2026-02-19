@@ -20,8 +20,7 @@ const UserOrdercart = ({ data }) => {
     try {
       const result = await axios.post(
         `${serverUrl}/api/item/rating`,
-        { itemId, rating },
-        { withCredentials: true },
+        { itemId, rating }
       );
 
       if (result.data.success) {

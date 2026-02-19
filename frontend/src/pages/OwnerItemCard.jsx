@@ -14,7 +14,7 @@ const OwnerItemCard = ({ data }) => {
 
   const handleDelete = async() =>{
     try {
-      const result = await axios.get(`${serverUrl}/api/item/delete/${data._id}`,{withCredentials:true})
+      const result = await axios.get(`${serverUrl}/api/item/delete/${data._id}`)
       dispatch(setMyShopData(result.data))
     } catch (error) {
       console.log(error)
