@@ -56,9 +56,19 @@ const UserOrdercart = ({ data }) => {
               Payment : {data.payment ? "true" : "false"}
             </p>
           )}
-          <p className="font-medium text-blue-600">
-            {data.shopOrders?.[0].status}
-          </p>
+          <p
+  className={`font-medium text-xs px-2 py-1 rounded text-white capitalize inline-block ${
+    data.shopOrders?.[0].status === "pending"
+      ? "bg-yellow-500"
+      : data.shopOrders?.[0].status === "preparing"
+      ? "bg-blue-500"
+      : data.shopOrders?.[0].status === "out of delivery"
+      ? "bg-green-600"
+      : "bg-gray-400"
+  }`}
+>
+  {data.shopOrders?.[0].status}
+</p>
         </div>
       </div>
 
