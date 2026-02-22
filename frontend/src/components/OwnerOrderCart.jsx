@@ -79,29 +79,43 @@ const OwnerOrderCart = ({ data }) => {
 
       {/* order status */}
       <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
-        <span className="text-sm">
-          Status:{" "}
-          <span className="font-semibold capitalize text-[#ff4d2d]">
-            {data.shopOrders.status}
-          </span>
-        </span>
+  <span className="text-sm">
+    Status:{" "}
+    <span
+      className={`font-semibold capitalize px-2 py-1 rounded text-white text-xs ${
+        data.shopOrders.status === "pending"
+          ? "bg-yellow-500"
+          : data.shopOrders.status === "preparing"
+          ? "bg-blue-500"
+          : "bg-green-600"
+      }`}
+    >
+      {data.shopOrders.status}
+    </span>
+  </span>
 
-        <select
-          value={data.shopOrders.status}
-          className="rounded-md border px-3 py-1 text-sm focus:oultine-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d]"
-          onChange={(e) =>
-            handleUpdateStatus(
-              data._id,
-              data.shopOrders.shop._id,
-              e.target.value,
-            )
-          }
-        >
-          <option value="pending">Pending</option>
-          <option value="preparing">Preparing</option>
-          <option value="out of delivery">Out of Delivery</option>
-        </select>
-      </div>
+  <select
+    defaultValue=""
+    className="rounded-md border px-3 py-1 text-sm focus:outline-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d]"
+    onChange={(e) => {
+      if (e.target.value !== "") {
+        handleUpdateStatus(
+          data._id,
+          data.shopOrders.shop._id,
+          e.target.value
+        );
+        e.target.value = ""; // reset back to Change
+      }
+    }}
+  >
+    <option value="" disabled>
+      Change
+    </option>
+    <option value="pending">Pending</option>
+    <option value="preparing">Preparing</option>
+    <option value="out of delivery">Out of Delivery</option>
+  </select>
+</div>
 
       {/* Show delivery Boys */}
       {data.shopOrders.status == "out of delivery" && (
