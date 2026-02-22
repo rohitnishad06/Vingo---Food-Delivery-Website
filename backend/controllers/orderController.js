@@ -357,7 +357,7 @@ export const updateOrderStatus = async (req, res) => {
       if (userSocketId) {
         io.to(userSocketId).emit("update-status", {
           orderId: order._id,
-          shopId: updatedShopOrder.shop._id,
+          shopId: updatedShopOrder?.shop._id,
           status: updatedShopOrder.status,
           userId: order.user._id,
         });
@@ -368,7 +368,7 @@ export const updateOrderStatus = async (req, res) => {
       shopOrder: updatedShopOrder,
       assignedDeliveryBoy: updatedShopOrder?.assignedDeliveryBoy,
       availableBoys: deliveryBoysPayload,
-      assignment: updatedShopOrder?.assignment._id,
+      assignment: updatedShopOrder?.assignment?._id,
     });
   } catch (error) {
     return res
