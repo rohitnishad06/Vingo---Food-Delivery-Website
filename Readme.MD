@@ -2,7 +2,7 @@
 
 <div align="center">
 
-  <h1>🍔 Petoo adda -FOOD-DELIVERY-WEBSITE</h1>
+  <h1>🍔 Petoo Adda -FOOD-DELIVERY-WEBSITE</h1>
   <i>Delighting Taste, Connecting People Instantly</i>
   
   <br><br>
@@ -189,7 +189,7 @@ MONGODB_URL=MONGO_URL
 JWT_SECRET=JWT_SECRET
 
 EMAIL=Your_Email
-PASS=Your_Email_Password
+BREVO_API_KEY=Your_Brevo_api
 
 NODE_ENV="development"
 
