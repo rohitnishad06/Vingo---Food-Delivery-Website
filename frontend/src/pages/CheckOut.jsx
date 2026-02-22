@@ -108,7 +108,6 @@ const CheckOut = () => {
 
   // handle the drag marker
   const onDragEnd = (e) => {
-    console.log(e.target._latlng);
     const { lat, lng } = e.target._latlng;
     dispatch(setLocation({ lat, lon: lng }));
     getAddressByLatLng(lat, lng);

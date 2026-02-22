@@ -209,7 +209,6 @@ const DeliveryBoyDahboard = () => {
                     key={index}
                   >
                     <div>
-                      {console.log(a.deliveryAddress)}
                       <p className="text-sm font-semibold">{a?.shopName}</p>
                       <p className="text-sm text-gray-500">
                         <span className="font-semibold">

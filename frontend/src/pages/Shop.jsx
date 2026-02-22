@@ -20,7 +20,6 @@ const Shop = () => {
       const result = await axios.get(
         `${serverUrl}/api/item/get-by-shop/${shopId}`
       );
-      console.log(result.data);
       setItems(result.data.items);
       setShop(result.data.shop);
     } catch (error) {

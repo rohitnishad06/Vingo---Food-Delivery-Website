@@ -54,7 +54,6 @@ const App = () => {
     dispatch(setSocket(socketInstance))
     socketInstance.on("connect",() => {
       if(userData){
-        console.log(userData)
         socketInstance.emit("identity",{userId:userData._id})
       }
     })
