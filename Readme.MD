@@ -2,7 +2,7 @@
 
 <div align="center">
 
-  <h1>🍔 VINGO-FOOD-DELIVERY-WEBSITE</h1>
+  <h1>🍔 Petoo adda -FOOD-DELIVERY-WEBSITE</h1>
   <i>Delighting Taste, Connecting People Instantly</i>
   
   <br><br>
@@ -52,7 +52,7 @@
 
 ## 🌟 Overview
 
-**VINGO** is a modern full-stack food delivery web application designed to provide a seamless ordering experience. Users can browse restaurants, place orders, complete secure payments, and track deliveries in real time.
+**Petoo Adda** is a modern full-stack food delivery web application designed to provide a seamless ordering experience. Users can browse restaurants, place orders, complete secure payments, and track deliveries in real time.
 
 ### 🚀 Key Highlights
 
@@ -168,8 +168,8 @@ Follow these steps to run the project locally on your system
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/vingo-food-delivery-website.git
-cd vingo-food-delivery-website
+git clone https://github.com/rohitnishad06/Petoo-Adda-Food-Delivery-Website.git
+cd petoo-adda-food-delivery-website
 ```
 
 ### Backend Setup
@@ -297,7 +297,7 @@ If you'd like to improve this project, follow the steps below:
 2. Clone your forked repository:
 
 ```bash
-git clone https://github.com/your-username/vingo-food-delivery-website.git
+git clone https://github.com/rohitnishad06/Petoo-Adda-Food-Delivery-Website.git
 ```
 
 ### Create a new branch:

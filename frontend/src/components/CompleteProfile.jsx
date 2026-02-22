@@ -79,7 +79,7 @@ const CompleteProfile = () => {
         </h1>
 
         <p className="text-gray-600 mb-8">
-          Just a few more details to start your Vingo journey 🍔
+          Just a few more details to start your Petoo Adda journey 🍔
         </p>
 
         {/* Full Name */}

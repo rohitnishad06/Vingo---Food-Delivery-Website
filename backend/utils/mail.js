@@ -8,7 +8,7 @@ const sendEmail = async (to, subject, htmlContent) => {
       "https://api.brevo.com/v3/smtp/email",
       {
         sender: {
-          name: "Vingo",
+          name: "Petoo Adda",
           email: process.env.EMAIL, // verified sender email in Brevo
         },
         to: [{ email: to }],

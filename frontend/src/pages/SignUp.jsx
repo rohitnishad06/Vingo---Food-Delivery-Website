@@ -11,6 +11,7 @@ import { auth } from "../../firebase";
 import { ClipLoader } from "react-spinners";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
+import logo from "../assets/logo.png"
 
 const SignUp = () => {
   const primaryColor = "#ff4d2d";
@@ -84,12 +85,11 @@ const SignUp = () => {
         className={`bg-white rounded-xl shadow-lg w-full max-w-md p-8 border-[1px]`}
         style={{ border: `1px solid ${borderColor}` }}
       >
-        <h1
-          className={`text-3xl font-bold mb-2`}
-          style={{ color: primaryColor }}
-        >
-          Vingo
-        </h1>
+        <img
+          src={logo}
+          alt="logo"
+          className="w-25 md:w-28 lg:w-30 h-auto object-contain cursor-pointer pt-3"
+        />
         <p className="text-gray-600 mb-8">
           Create your account to get started with delicious food deliveries
         </p>
